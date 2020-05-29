@@ -63,20 +63,25 @@ app.get("/planets", async (req, res) => {
           .then((data) => Promise.resolve(data));
       });
 
-      Promise.all(dataFetchArray).then((residents) => {
-        list = list.map((planet) => {
-          planet.residents = [];
+      Promise.all(dataFetchArray)
+        .then((residents) => {
+          list = list.map((planet) => {
+            planet.residents = [];
 
-          // Join by url comparison
-          residents.forEach((resident) => {
-            if (resident.homeworld === planet.url) {
-              planet.residents.push(resident.name);
-            }
+            // Join by url comparison
+            residents.forEach((resident) => {
+              if (resident.homeworld === planet.url) {
+                planet.residents.push(resident.name);
+              }
+            });
+            return planet;
           });
-          return planet;
+          res.json(list);
+        })
+        .catch((error) => {
+          console.log(error);
+          res.json({ success: false, error: JSON.stringify(error) });
         });
-        res.json(list);
-      });
     })
     .catch((error) => {
       console.log(error);
